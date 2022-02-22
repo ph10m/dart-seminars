@@ -4,8 +4,8 @@ import { useState, useEffect, Fragment } from 'react';
 import ResponsiveAppBar from './components/Topbar';
 import PopupLogin from './components/PopupLogin';
 import { collection, onSnapshot, getDocs, doc, addDoc } from 'firebase/firestore';
-import SeminarCard from './components/card';
-import { Box, Grid, Typography } from '@mui/material';
+import SeminarCard from './components/Card';
+import { Box, Grid, Paper, Typography } from '@mui/material';
 import { FloatWithIcon } from './components/FloatWithIcon';
 import { Add } from '@mui/icons-material';
 import SeminarForm from './components/SeminarForm';
@@ -67,7 +67,7 @@ function App({loginConfig, db}) {
     setEditingSeminar(seminar);
   }
 
-  // sort 
+  // sort by date
   if (seminars) {
     seminars.sort(function(a, b) {
       const date1 = new Date(a.date)
@@ -82,6 +82,7 @@ function App({loginConfig, db}) {
   return (
     <div className="App">
       <ResponsiveAppBar
+        id="topbar"
         logo="DART - Internal Seminars (logo?)"
         user={user}
         signedIn={isSignedIn}
@@ -112,7 +113,8 @@ function App({loginConfig, db}) {
           editFn={setEditingSeminar}
         />
       )}
-      <div className="content">
+      {/* <div className="content"> */}
+      <Paper className="content" elevation={10}>
         {moment(seminars && seminars[0].date) > moment() && (
           <>
             <Typography variant="h2" fontSize={50} padding={2} marginTop={3}>
@@ -130,8 +132,10 @@ function App({loginConfig, db}) {
             container
             alignItems="center"
             justifyContent="center"
-            spacing={3}
-            padding={6}
+            spacing={1}
+            padding={1}
+            paddingTop={5}
+            paddingBottom={20}
           >
             {seminars.map((seminar, i) => (
               <Fragment key={i}>
@@ -148,7 +152,7 @@ function App({loginConfig, db}) {
             ))}
           </Grid>
         )}
-      </div>
+      </Paper>
     </div>
   );
 }

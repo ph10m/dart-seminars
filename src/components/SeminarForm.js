@@ -27,27 +27,20 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 const Datepicker = ({label, val, onChange}) => {
-  const [date, setDate] = React.useState(moment(val));
-  const [time, setTime] = React.useState(null)
+  const [value, setValue] = React.useState(val)
 
   return (
     <LocalizationProvider dateAdapter={DateAdapter}>
       <MobileDatePicker
-        label="Date"
+        label={label}
         inputFormat="DD/MM/yyyy"
-        value={date}
-        onChange={(newDate) => {
-          setDate(newDate)
-          onChange(newDate)
+        value={value}
+        onChange={(x) => {
+          setValue(x)
+          onChange(x)
         }}
         renderInput={(params) => <TextField {...params} />}
       />
-      {/* <TimePicker
-        label="Time"
-        value={time}
-        onChange={handleChange}
-        renderInput={(params) => <TextField {...params} />}
-      /> */}
     </LocalizationProvider>
   )
 }
@@ -55,28 +48,26 @@ const Datepicker = ({label, val, onChange}) => {
 const Multiline = ({label, val, onChange}) => {
   const [value, setValue] = React.useState(val);
 
-  const handleChange = (event) => {
-    setValue(event.target.value);
-    onChange(event)
-  };
-
   return (
-    <Box
-      component="form"
-      noValidate
-      autoComplete="off"
-    >
+    <Box component="form" noValidate autoComplete="off">
       <TextField
         id="outlined-textarea"
         label={label}
-        placeholder={label}
+        placeholder={label || "input..."}
         multiline
         value={value}
-        onChange={handleChange}
+        onChange={(e) => {
+          setValue(e.target.value);
+          onChange(e)
+        }}
       />
     </Box>
   );
 }
+
+const FullWidthBox = ({children}) => (
+  <Box fullWidth sx={{ '& .MuiTextField-root': { my: 1, mx: 1, minWidth: '80vw' }, }}>{children}</Box>
+)
 
 export default function SeminarForm({isOpen, db, seminar, editFn}) {
   const [changedSeminar, setSeminar] = React.useState({...seminar})
@@ -164,39 +155,56 @@ export default function SeminarForm({isOpen, db, seminar, editFn}) {
         >
         <List>
           {seminar && (
-            Object.entries(seminar).map(([key, val]) => {
-              if (key == "id") {
-                return <React.Fragment key={key} />
-              }
-              return (
-              <ListItem key={key}>
-                <Box
-                  fullWidth
-                  sx={{
-                    '& .MuiTextField-root': {
-                      my: 1, mx: 1, minWidth: '80vw'
-                    },
-                  }}
-                >
-                  {key.includes("date") ? (
-                    <Datepicker
-                      label={key}
-                      val={val}
-                      onChange={(e) => {
-                        handleChange(key, moment(e).toISOString())}
-                      }
-                    />
-                  ) : (
-                    <Multiline
-                      label={key}
-                      val={val}
-                      onChange={(e) => handleChange(key, e.target.value)}
-                    />
-                  )}
-                </Box>
+            <>
+              {Object.entries(seminar).sort().map(([key, val]) => {
+                if (key == "id") {
+                  return <React.Fragment key={key} />
+                }
+                return (
+                <ListItem key={key}>
+                  <FullWidthBox>
+                    {key.includes("date") ? (
+                      <Datepicker
+                        label={key.toUpperCase()}
+                        val={val}
+                        onChange={(e) => { handleChange(key, moment(e).toISOString())} }
+                      />
+                    ) : (
+                      <Multiline
+                        label={key.toUpperCase()}
+                        val={val}
+                        onChange={(e) => handleChange(key, e.target.value)}
+                      />
+                    )}
+                  </FullWidthBox>
+                </ListItem>
+                )
+              })}
+              <ListItem>
+                {/* always set time and an image, regardless if it's in the database */}
+                <FullWidthBox>
+                  <TextField
+                    id="time"
+                    label="Start time"
+                    type="time"
+                    defaultValue="12:00"
+                    InputLabelProps={{ shrink: true, }}
+                    inputProps={{ step: 900 }}
+                    sx={{ width: 200 }}
+                    onChange={(e) => handleChange("time", e.target.value)}
+                  />
+                </FullWidthBox>
               </ListItem>
-              )
-            })
+              <ListItem>
+                <FullWidthBox>
+                  <Multiline
+                    label="IMAGE URL"
+                    val="https://en.uit.no/Content/534983/cache=1505474594000/grid-AI.jpg"
+                    onChange={(e) => handleChange("image", e.target.value)}
+                  />
+                </FullWidthBox>
+              </ListItem>
+            </>
           )}
         </List>
         {!isNew && (

@@ -22,16 +22,21 @@ html, body {
 #seminar-card {
   min-width: 350px;
   max-width: 500px;
-  transition: cubic-bezier(0.075, 0.82, 0.165, 1) transform 0.5s;
+  transition: cubic-bezier(0.075, 0.82, 0.165, 1) all 0.5s;
   cursor: pointer;
+  margin: 20px;
+  padding: 5px;
 }
 #seminar-card:hover {
-  transform: scale(1.05);
+  /* transform: scale(1.05); */
+  padding: 25px;
+  margin: 0;
+  /* background-color: rgb(240,240,240); */
 }
 
 @media only screen and (max-width: 600px) {
   .content {
-    width: 90%;
+    width: 100%;
     background: none;
   }
   #seminar-card {
