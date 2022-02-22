@@ -79,8 +79,6 @@ function App({loginConfig, db}) {
     })
   }
 
-  const firstSeminar = seminars[0];
-
   return (
     <div className="App">
       <ResponsiveAppBar
@@ -115,15 +113,15 @@ function App({loginConfig, db}) {
         />
       )}
       <div className="content">
-        {moment(firstSeminar.date) > moment() && (
+        {moment(seminars && seminars[0].date) > moment() && (
           <>
             <Typography variant="h2" fontSize={50} padding={2} marginTop={3}>
               Next up
             </Typography>
-            <Typography variant="h5">{firstSeminar.topic}</Typography>
-            <Typography>by {firstSeminar.presenter}</Typography>
+            <Typography variant="h5">{seminars[0].topic}</Typography>
+            <Typography>by {seminars[0].presenter}</Typography>
             <Typography variant="overline">
-              {dateConvert(firstSeminar.date)}
+              {dateConvert(seminars[0].date)}
             </Typography>
           </>
         )}
