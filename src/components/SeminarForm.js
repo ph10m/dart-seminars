@@ -199,7 +199,7 @@ export default function SeminarForm({isOpen, db, seminar, editFn}) {
                 <FullWidthBox>
                   <Multiline
                     label="IMAGE URL"
-                    val="https://en.uit.no/Content/534983/cache=1505474594000/grid-AI.jpg"
+                    val={seminar.image || "https://en.uit.no/Content/534983/cache=1505474594000/grid-AI.jpg"}
                     onChange={(e) => handleChange("image", e.target.value)}
                   />
                 </FullWidthBox>
