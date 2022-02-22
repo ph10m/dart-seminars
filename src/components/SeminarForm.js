@@ -9,73 +9,31 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import MobileDatePicker from '@mui/lab/MobileDatePicker';
-import DateAdapter from '@mui/lab/AdapterMoment';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import moment from 'moment';
 import { collection, getDocFromServer, doc, setDoc, deleteDoc } from 'firebase/firestore';
 import { DialogActions, DialogContent, DialogContentText, DialogTitle, Grid } from '@mui/material';
+import { FullWidthBox } from './Boxes';
+import { Datepicker, Multiline } from './TextFields';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const Datepicker = ({label, val, onChange}) => {
-  const [value, setValue] = React.useState(val)
-
-  return (
-    <LocalizationProvider dateAdapter={DateAdapter}>
-      <MobileDatePicker
-        label={label}
-        inputFormat="DD/MM/yyyy"
-        value={value}
-        onChange={(x) => {
-          setValue(x)
-          onChange(x)
-        }}
-        renderInput={(params) => <TextField {...params} />}
-      />
-    </LocalizationProvider>
-  )
-}
-
-const Multiline = ({label, val, onChange}) => {
-  const [value, setValue] = React.useState(val);
-
-  return (
-    <Box component="form" noValidate autoComplete="off">
-      <TextField
-        id="outlined-textarea"
-        label={label}
-        placeholder={label || "input..."}
-        multiline
-        value={value}
-        onChange={(e) => {
-          setValue(e.target.value);
-          onChange(e)
-        }}
-      />
-    </Box>
-  );
-}
-
-const FullWidthBox = ({children}) => (
-  <Box fullWidth sx={{ '& .MuiTextField-root': { my: 1, mx: 1, minWidth: '80vw' }, }}>{children}</Box>
-)
 
 export default function SeminarForm({isOpen, db, seminar, editFn}) {
   const [changedSeminar, setSeminar] = React.useState({...seminar})
   const [isNew, setNew] = React.useState(false);
   const [toDelete, setDelete] = React.useState(false);
 
+  const docRef = collection(db, "seminars")
+  const seminarRef = doc(db, "seminars", seminar.id)
+
   React.useEffect(() => {
-    const docRef = doc(db, "seminars", seminar.id)
     const fetchData = async () => {
       try {
-        getDocFromServer(docRef).then((x) => {
+        getDocFromServer(seminarRef).then((x) => {
           setNew(!x.exists())
         })
       } catch (e) {
@@ -86,13 +44,10 @@ export default function SeminarForm({isOpen, db, seminar, editFn}) {
   }, [db, seminar.id])
 
 
-  const handleClose = () => {
-    editFn(null)
-  }
+  const handleClose = () => editFn(null)
 
+  // use the uuid (as the index) to store 
   const saveChanges = async () => {
-    // use the uuid (as the index) to store 
-    const docRef = collection(db, "seminars")
     try {
       await setDoc(doc(docRef, changedSeminar.id), {...changedSeminar})
     } catch (e) {
@@ -103,7 +58,6 @@ export default function SeminarForm({isOpen, db, seminar, editFn}) {
   }
 
   const deleteSeminar = async () => {
-    const docRef = collection(db, "seminars")
     try {
       await deleteDoc(doc(docRef, changedSeminar.id))
     } catch (e) {
@@ -120,28 +74,16 @@ export default function SeminarForm({isOpen, db, seminar, editFn}) {
 
   return (
     <div>
-      <Dialog
-        fullScreen
-        open={isOpen}
-        onClose={handleClose}
-        TransitionComponent={Transition}
-      >
+      <Dialog fullScreen open={isOpen} onClose={handleClose} TransitionComponent={Transition}>
         <AppBar sx={{ position: 'relative' }}>
           <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={handleClose}
-              aria-label="close"
-            >
+            <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
               <CloseIcon />
             </IconButton>
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
               {isNew ? "New seminar" : "Modify seminar"}
             </Typography>
-            <Button autoFocus color="inherit" onClick={saveChanges}>
-              save
-            </Button>
+            <Button autoFocus color="inherit" onClick={saveChanges}>save</Button>
           </Toolbar>
         </AppBar>
         <Grid

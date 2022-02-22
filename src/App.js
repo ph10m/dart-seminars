@@ -3,11 +3,9 @@ import firebase from 'firebase/compat/app';
 import { useState, useEffect, Fragment } from 'react';
 import ResponsiveAppBar from './components/Topbar';
 import PopupLogin from './components/PopupLogin';
-import { collection, onSnapshot, getDocs, doc, addDoc } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import SeminarCard from './components/Card';
-import { Box, Grid, Paper, Typography } from '@mui/material';
-import { FloatWithIcon } from './components/FloatWithIcon';
-import { Add } from '@mui/icons-material';
+import { Grid, Paper, Typography } from '@mui/material';
 import SeminarForm from './components/SeminarForm';
 import { uuidv4 } from './util/uuid';
 import moment from 'moment';
@@ -18,7 +16,6 @@ function App({loginConfig, db}) {
   const [loginPrompt, setLoginPrompt] = useState(false);
   const [seminars, setSeminars] = useState(null)
   const [editingSeminar, setEditingSeminar] = useState(null);
-  const [input, setInput] = useState("");
 
   const user = firebase.auth().currentUser;
 
@@ -26,20 +23,13 @@ function App({loginConfig, db}) {
     onSnapshot(collection(db, "seminars"), (snapshot) => {
       setSeminars(snapshot.docs.map(doc => doc.data()))
     })
-  }, [input])
-
-  const addSeminar = (e) => {
-    e.preventDefault();
-    setSeminars([...seminars, input]);
-    setInput("")
-  };
+  }, [editingSeminar])
 
   useEffect(() => {
-    const unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => {
-      setIsSignedIn(!!user);
+    const unregisterAuthObserver = firebase.auth().onAuthStateChanged(authorized => {
+      setIsSignedIn(!!authorized);
     });
-    // Make sure we un-register Firebase observer
-    // when the component unmounts.
+    // Make sure we un-register Firebase observer when the component unmounts.
     return () => unregisterAuthObserver(); 
   }, []);
 
@@ -61,10 +51,6 @@ function App({loginConfig, db}) {
       presenter: user.displayName,
     }
     setEditingSeminar(seminarTemplate)
-  }
-
-  const editSeminar = (seminar) => {
-    setEditingSeminar(seminar);
   }
 
   // sort by date
@@ -90,13 +76,6 @@ function App({loginConfig, db}) {
         logoutAction={signOut}
         newSeminar={newSeminar}
       />
-      {/* <Grow in={loginPrompt}>
-        <div id="signin-prompt">
-          <h2>Sign in using one of the below services</h2>
-          <StyledFirebaseAuth uiConfig={loginConfig} firebaseAuth={firebase.auth()} />
-          <Button variant="outlined" color="secondary" onClick={() => setLoginPrompt(false)}>Cancel</Button> 
-        </div>
-      </Grow> */}
       {!isSignedIn && (
         <PopupLogin
           isOpen={loginPrompt}
@@ -113,7 +92,6 @@ function App({loginConfig, db}) {
           editFn={setEditingSeminar}
         />
       )}
-      {/* <div className="content"> */}
       <Paper className="content" elevation={10}>
         {moment(seminars && seminars[0].date) > moment() && (
           <>
@@ -132,8 +110,6 @@ function App({loginConfig, db}) {
             container
             alignItems="center"
             justifyContent="center"
-            spacing={1}
-            padding={1}
             paddingTop={5}
             paddingBottom={20}
           >
@@ -144,7 +120,7 @@ function App({loginConfig, db}) {
                     <SeminarCard
                       data={seminar}
                       editable={user}
-                      onEdit={() => editSeminar(seminar)}
+                      onEdit={() => setEditingSeminar(seminar)}
                     />
                 </Grid>
                 )}

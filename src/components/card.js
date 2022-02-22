@@ -9,6 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ShareIcon from '@mui/icons-material/Share';
 import { Edit } from '@mui/icons-material';
+import { Tooltip } from '@mui/material';
 
 const NTNU_COLORS = [
   "#bcd025",  // lime
@@ -37,27 +38,27 @@ export default function SeminarCard({data, editable, onEdit}) {
     <Card id="seminar-card" elevation={15}>
       <CardHeader
         avatar={
-          <Avatar sx={{ bgcolor: randomNtnuColor() }} aria-label="recipe">
-            {data.presenter[0]}
-          </Avatar>
+          <Tooltip title={data.presenter}>
+            <Avatar alt={data.presenter} sx={{ bgcolor: randomNtnuColor() }} aria-label="recipe">
+              {data.presenter[0]}
+            </Avatar>
+          </Tooltip>
         }
         action={ editable && (
-          <IconButton aria-label="settings" onClick={onEdit}>
-            <Edit />
-          </IconButton>
+          <Tooltip title="Edit seminar">
+            <IconButton aria-label="settings" onClick={onEdit}>
+              <Edit />
+            </IconButton>
+          </Tooltip>
         )}
         title={
           <Typography variant="button">
-            {data.time ? (
-              `${formattedDate}, ${data.time}`
-            ) : (
-              formattedDate
-            )}
+            {data.time ? ( `${formattedDate}, ${data.time}`) : formattedDate}
           </Typography>
         }
         subheader={data.presenter}
       />
-      <CardMedia component="img" height="194" image={image} alt="generic ai image"/>
+      <CardMedia component="img" height="150" image={image} alt="Seminar image"/>
       <CardContent>
         <Typography variant="h5" fontSize={20} color="text.secondary">
           {data.topic}
