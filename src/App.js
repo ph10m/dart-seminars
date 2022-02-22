@@ -1,21 +1,37 @@
 import './App.css';
 import firebase from 'firebase/compat/app';
-import { useState, useEffect } from 'react';
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import { Button, Fab } from '@mui/material'
-import LoginIcon from '@mui/icons-material/Login';
-import LogoutIcon from '@mui/icons-material/Logout';
+import { useState, useEffect, Fragment } from 'react';
+import ResponsiveAppBar from './components/Topbar';
+import PopupLogin from './components/PopupLogin';
+import { collection, onSnapshot, getDocs, doc, addDoc } from 'firebase/firestore';
+import SeminarCard from './components/card';
+import { Box, Grid } from '@mui/material';
+import { FloatWithIcon } from './components/FloatWithIcon';
+import { Add } from '@mui/icons-material';
+import SeminarForm from './components/SeminarForm';
+import { uuidv4 } from './util/uuid';
+import moment from 'moment';
 
-const FloatWithIcon = ({Icon, text, ...props }) => (
-  <Fab variant="extended" {...props}>
-    <Icon sx={{ mr: 1 }}/>
-    {text}
-  </Fab>
-)
-
-function App({loginConfig}) {
+function App({loginConfig, db}) {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [loginPrompt, setLoginPrompt] = useState(false);
+  const [seminars, setSeminars] = useState(null)
+  const [editingSeminar, setEditingSeminar] = useState(null);
+  const [input, setInput] = useState("");
+
+  const user = firebase.auth().currentUser;
+
+  useEffect(() => {
+    onSnapshot(collection(db, "seminars"), (snapshot) => {
+      setSeminars(snapshot.docs.map(doc => doc.data()))
+    })
+  }, [input])
+
+  const addSeminar = (e) => {
+    e.preventDefault();
+    setSeminars([...seminars, input]);
+    setInput("")
+  };
 
   useEffect(() => {
     const unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => {
@@ -26,29 +42,100 @@ function App({loginConfig}) {
     return () => unregisterAuthObserver(); 
   }, []);
 
-  if (!isSignedIn) {
-    return (
-      <div>
-        <FloatWithIcon
-          Icon={LoginIcon}
-          text="Login"
-          onClick={() => setLoginPrompt(true)}
-        />
-        {loginPrompt && (
-          <StyledFirebaseAuth uiConfig={loginConfig} firebaseAuth={firebase.auth()} />
-        )}
-      </div>
-    );
+  const signIn = () => {
+    setLoginPrompt(true)
   }
+  const signOut = () => {
+    setLoginPrompt(false)
+    firebase.auth().signOut()
+  }
+
+  const newSeminar = () => {
+    const seminarTemplate = {
+      date: moment(),
+      description: "please provide a description, or more URLs",
+      id: uuidv4(),
+      link: "http://example.com",
+      topic: "Headline/topic",
+      presenter: user.displayName,
+    }
+    setEditingSeminar(seminarTemplate)
+  }
+
+  const editSeminar = (seminar) => {
+    setEditingSeminar(seminar);
+  }
+
+  // sort 
+  if (seminars) {
+    seminars.sort(function(a, b) {
+      const date1 = new Date(a.date)
+      const date2 = new Date(b.date)
+
+      if (date1 > date2) return -1;
+      if (date1 < date2) return 1;
+      return 0;
+    })
+  }
+
   return (
     <div className="App">
-      <h1>DART Internal Seminars</h1>
-      <p>Welcome {firebase.auth().currentUser.displayName}</p>
-      <FloatWithIcon
-        Icon={LogoutIcon}
-        text="Sign out"
-        onClick={() => firebase.auth().signOut()}
+      <ResponsiveAppBar
+        logo="DART - Internal Seminars (logo?)"
+        user={user}
+        signedIn={isSignedIn}
+        loginAction={signIn}
+        logoutAction={signOut}
+        newSeminar={newSeminar}
       />
+      {/* <Grow in={loginPrompt}>
+        <div id="signin-prompt">
+          <h2>Sign in using one of the below services</h2>
+          <StyledFirebaseAuth uiConfig={loginConfig} firebaseAuth={firebase.auth()} />
+          <Button variant="outlined" color="secondary" onClick={() => setLoginPrompt(false)}>Cancel</Button> 
+        </div>
+      </Grow> */}
+      {!isSignedIn && (
+        <PopupLogin
+          isOpen={loginPrompt}
+          onCancel={() => setLoginPrompt(false)}
+          auth={firebase.auth()}
+          loginConfig={loginConfig}
+        />
+      )}
+      {user && editingSeminar && (
+        <SeminarForm
+          isOpen={!!editingSeminar}
+          db={db}
+          seminar={editingSeminar}
+          editFn={setEditingSeminar}
+        />
+      )}
+      <div className="content">
+        {seminars && (
+          <Grid
+            container
+            alignItems="center"
+            justifyContent="center"
+            spacing={3}
+            padding={6}
+          >
+            {seminars.map((seminar, i) => (
+              <Fragment key={i}>
+                {seminar.topic && (
+                <Grid item xs="auto" key={seminar.date}>
+                    <SeminarCard
+                      data={seminar}
+                      editable={user}
+                      onEdit={() => editSeminar(seminar)}
+                    />
+                </Grid>
+                )}
+              </Fragment>
+            ))}
+          </Grid>
+        )}
+      </div>
     </div>
   );
 }
