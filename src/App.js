@@ -52,7 +52,7 @@ function App({loginConfig, db}) {
 
   const newSeminar = () => {
     const seminarTemplate = {
-      date: moment(),
+      date: moment().toISOString(),
       description: "please provide a description, or more URLs",
       id: uuidv4(),
       link: "http://example.com",

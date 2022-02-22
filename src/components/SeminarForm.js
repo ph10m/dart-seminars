@@ -18,7 +18,8 @@ import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import DateAdapter from '@mui/lab/AdapterMoment';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import moment from 'moment';
-import { collection, getDocFromServer, doc, setDoc, getDoc, addDoc } from 'firebase/firestore';
+import { collection, getDocFromServer, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -80,6 +81,7 @@ const Multiline = ({label, val, onChange}) => {
 export default function SeminarForm({isOpen, db, seminar, editFn}) {
   const [changedSeminar, setSeminar] = React.useState({...seminar})
   const [isNew, setNew] = React.useState(false);
+  const [toDelete, setDelete] = React.useState(false);
 
   React.useEffect(async () => {
     const docRef = doc(db, "seminars", seminar.id)
@@ -106,6 +108,16 @@ export default function SeminarForm({isOpen, db, seminar, editFn}) {
       console.error("Error changing doc id", seminar.id)
     }
 
+    editFn(null);
+  }
+
+  const deleteSeminar = async () => {
+    const docRef = collection(db, "seminars")
+    try {
+      await deleteDoc(doc(docRef, changedSeminar.id))
+    } catch (e) {
+      console.error("Error deleting doc id", seminar.id)
+    }
     editFn(null);
   }
 
@@ -178,6 +190,41 @@ export default function SeminarForm({isOpen, db, seminar, editFn}) {
             })
           )}
         </List>
+        {!isNew && (
+          <>
+            <Button variant="outlined" color="error" onClick={() => setDelete(true)}>
+              Delete seminar
+            </Button>
+            <Dialog
+              open={toDelete}
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">
+                {"Delete seminar"}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  {`Are you sure you want to delete this seminar: "${changedSeminar.topic}"?`}
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setDelete(false)}>Go back!</Button>
+                <Button
+                  color="error"
+                  onClick={() => {
+                    deleteSeminar()
+                    setDelete(false)
+                  }}
+                  autoFocus
+                >
+                  Delete
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </>
+        )}
       </Dialog>
     </div>
   );

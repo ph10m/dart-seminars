@@ -28,6 +28,21 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
+const NTNU_COLORS = [
+  "#bcd025",  // lime
+  "#6096d0",  // light blue
+  "#ef8114",  // orange
+  "#b01b81",  // pink
+  "#f7d019",  // gold
+  "#482776",  // purple
+  "#3cbfbe",  // teal
+]
+
+function randomNtnuColor() {
+  const random_idx = Math.floor(Math.random() * 100) % NTNU_COLORS.length
+  return NTNU_COLORS[random_idx]
+}
+
 function truncate(source, size) {
   return source.length > size ? source.slice(0, size - 1) + "…" : source;
 }
@@ -46,7 +61,7 @@ export default function SeminarCard({data, editable, onEdit}) {
     <Card id="seminar-card">
       <CardHeader
         avatar={
-          <Avatar sx={{ bgcolor: "rgb(239, 129, 20)" }} aria-label="recipe">
+          <Avatar sx={{ bgcolor: randomNtnuColor() }} aria-label="recipe">
             {data.presenter[0]}
           </Avatar>
         }
