@@ -158,7 +158,8 @@ export default function SeminarForm({isOpen, db, seminar, editFn}) {
           direction="column"
           alignItems="center"
           justifyContent="center"
-          padding={6}
+          margin={0}
+          padding={2}
           marginBottom={30}
         >
         <List>
@@ -173,7 +174,7 @@ export default function SeminarForm({isOpen, db, seminar, editFn}) {
                   fullWidth
                   sx={{
                     '& .MuiTextField-root': {
-                      my: 2, mx: 1, minWidth: '80vw'
+                      my: 1, mx: 1, minWidth: '80vw'
                     },
                   }}
                 >
