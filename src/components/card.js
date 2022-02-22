@@ -25,10 +25,6 @@ function randomNtnuColor() {
   return NTNU_COLORS[random_idx]
 }
 
-function truncate(source, size) {
-  return source.length > size ? source.slice(0, size - 1) + "…" : source;
-}
-
 export default function SeminarCard({data, editable, onEdit}) {
   const defaultImg = "https://en.uit.no/Content/534983/cache=1505474594000/grid-AI.jpg"
   const image = data.image || defaultImg

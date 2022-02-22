@@ -43,6 +43,10 @@ html, body {
     min-width: 350px;
     max-width: 350px;
   }
+  #seminar-card:hover {
+    margin: 20px;
+    padding: 0;
+  }
 }
 
 #appbar {

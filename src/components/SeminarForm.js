@@ -1,10 +1,8 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import ListItemText from '@mui/material/ListItemText';
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -13,7 +11,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import TimePicker from '@mui/lab/TimePicker';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import DateAdapter from '@mui/lab/AdapterMoment';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
@@ -74,16 +71,19 @@ export default function SeminarForm({isOpen, db, seminar, editFn}) {
   const [isNew, setNew] = React.useState(false);
   const [toDelete, setDelete] = React.useState(false);
 
-  React.useEffect(async () => {
+  React.useEffect(() => {
     const docRef = doc(db, "seminars", seminar.id)
-    try {
-      getDocFromServer(docRef).then((x) => {
-        setNew(!x.exists())
-      })
-    } catch (e) {
-      console.error(e)
+    const fetchData = async () => {
+      try {
+        getDocFromServer(docRef).then((x) => {
+          setNew(!x.exists())
+        })
+      } catch (e) {
+        console.error(e)
+      }
     }
-  }, [])
+    fetchData();
+  }, [db, seminar.id])
 
 
   const handleClose = () => {
@@ -157,7 +157,7 @@ export default function SeminarForm({isOpen, db, seminar, editFn}) {
           {seminar && (
             <>
               {Object.entries(seminar).sort().map(([key, val]) => {
-                if (key == "id") {
+                if (key === "id") {
                   return <React.Fragment key={key} />
                 }
                 return (
