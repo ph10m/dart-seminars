@@ -16,6 +16,7 @@ html, body {
 .content {
   width: 80%;
   background: rgba(0, 80, 158, 0.1);
+  margin-bottom: 300px;
 }
 
 #seminar-card {

@@ -5,12 +5,13 @@ import ResponsiveAppBar from './components/Topbar';
 import PopupLogin from './components/PopupLogin';
 import { collection, onSnapshot, getDocs, doc, addDoc } from 'firebase/firestore';
 import SeminarCard from './components/card';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import { FloatWithIcon } from './components/FloatWithIcon';
 import { Add } from '@mui/icons-material';
 import SeminarForm from './components/SeminarForm';
 import { uuidv4 } from './util/uuid';
 import moment from 'moment';
+import { dateConvert } from './util/date';
 
 function App({loginConfig, db}) {
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -78,6 +79,8 @@ function App({loginConfig, db}) {
     })
   }
 
+  const firstSeminar = seminars[0];
+
   return (
     <div className="App">
       <ResponsiveAppBar
@@ -112,6 +115,18 @@ function App({loginConfig, db}) {
         />
       )}
       <div className="content">
+        {moment(firstSeminar.date) > moment() && (
+          <>
+            <Typography variant="h2" fontSize={50} padding={2} marginTop={3}>
+              Next up
+            </Typography>
+            <Typography variant="h5">{firstSeminar.topic}</Typography>
+            <Typography>by {firstSeminar.presenter}</Typography>
+            <Typography variant="overline">
+              {dateConvert(firstSeminar.date)}
+            </Typography>
+          </>
+        )}
         {seminars && (
           <Grid
             container

@@ -19,7 +19,7 @@ import DateAdapter from '@mui/lab/AdapterMoment';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import moment from 'moment';
 import { collection, getDocFromServer, doc, setDoc, deleteDoc } from 'firebase/firestore';
-import { DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { DialogActions, DialogContent, DialogContentText, DialogTitle, Grid } from '@mui/material';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -153,6 +153,14 @@ export default function SeminarForm({isOpen, db, seminar, editFn}) {
             </Button>
           </Toolbar>
         </AppBar>
+        <Grid
+          container
+          direction="column"
+          alignItems="center"
+          justifyContent="center"
+          padding={6}
+          marginBottom={30}
+        >
         <List>
           {seminar && (
             Object.entries(seminar).map(([key, val]) => {
@@ -225,6 +233,7 @@ export default function SeminarForm({isOpen, db, seminar, editFn}) {
             </Dialog>
           </>
         )}
+        </Grid>
       </Dialog>
     </div>
   );
