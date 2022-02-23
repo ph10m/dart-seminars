@@ -1,15 +1,15 @@
-import './App.css';
-import firebase from 'firebase/compat/app';
-import { useState, useEffect, Fragment } from 'react';
-import ResponsiveAppBar from './components/Topbar';
-import PopupLogin from './components/PopupLogin';
-import { collection, onSnapshot } from 'firebase/firestore';
-import SeminarCard from './components/Card';
 import { Grid, Paper, Typography } from '@mui/material';
-import SeminarForm from './components/SeminarForm';
-import { uuidv4 } from './util/uuid';
+import firebase from 'firebase/compat/app';
+import { collection, onSnapshot } from 'firebase/firestore';
 import moment from 'moment';
+import { Fragment, useEffect, useState } from 'react';
+import PopupLogin from './modules/LoginModule';
+import SeminarForm from './modules/FormModule';
+import ResponsiveAppBar from './modules/MenuModule';
+import SeminarCard from './modules/CardModule';
 import { dateConvert } from './util/date';
+import { uuidv4 } from './util/uuid';
+import './App.css';
 
 function App({loginConfig, db}) {
   const [isSignedIn, setIsSignedIn] = useState(false);

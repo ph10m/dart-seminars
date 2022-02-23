@@ -10,7 +10,7 @@ import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import LoginIcon from '@mui/icons-material/Login';
-import { FloatWithIcon } from './FloatWithIcon';
+import { FloatWithIcon } from '../components/FloatWithIcon';
 import { Add } from '@mui/icons-material';
 
 const pages = []

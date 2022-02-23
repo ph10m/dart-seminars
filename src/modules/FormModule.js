@@ -13,8 +13,8 @@ import TextField from '@mui/material/TextField';
 import moment from 'moment';
 import { collection, getDocFromServer, doc, setDoc, deleteDoc } from 'firebase/firestore';
 import { DialogActions, DialogContent, DialogContentText, DialogTitle, Grid } from '@mui/material';
-import { FullWidthBox } from './Boxes';
-import { Datepicker, Multiline } from './TextFields';
+import { FullWidthBox } from '../components/Boxes';
+import { Datepicker, Multiline } from '../components/TextFields';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
