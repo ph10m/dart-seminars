@@ -12,18 +12,26 @@ import MenuItem from '@mui/material/MenuItem';
 import LoginIcon from '@mui/icons-material/Login';
 import { FloatWithIcon } from '../components/FloatWithIcon';
 import { Add } from '@mui/icons-material';
+import useMediaQuery from '@mui/material/useMediaQuery';
+
+// logo files
+// import logoRobot from '../assets/logo/only-robot.png'
+import logoText from '../assets/logo/only-text.png'
+import logoFull from '../assets/logo/full.png'
+import { useTheme } from '@mui/material/styles';
+
 
 const pages = []
 const settings = ['Sign out']
 
 const ResponsiveAppBar = ({
-  logo,
   user,
   signedIn,
   loginAction,
   logoutAction,
   newSeminar
 }) => {
+  const theme = useTheme();
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
   const handleOpenUserMenu = (event) => {
@@ -38,14 +46,17 @@ const ResponsiveAppBar = ({
     <AppBar position="static" id="appbar" color="inherit">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ mr: 2, display: { xs: '12', md: 'flex' } }}
-          >
-            {logo}
-          </Typography>
+          {useMediaQuery(theme.breakpoints.up("sm")) ? (
+            <Box id="logo" sx={{ mr: 0, p: 1}} >
+              <img src={logoFull} height={100} color="white" alt="DART logo" />
+            </Box>
+          ) : (
+            <Box id="logo" sx={{ mr: 0, pt: 0.5}} >
+              <img src={logoText} height={30} alt="DART logo" />
+            </Box>
+          )}
+
+
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
           </Box>

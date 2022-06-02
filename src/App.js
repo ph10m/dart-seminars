@@ -69,7 +69,6 @@ function App({loginConfig, db}) {
     <div className="App">
       <ResponsiveAppBar
         id="topbar"
-        logo="DART - Internal Seminars (logo?)"
         user={user}
         signedIn={isSignedIn}
         loginAction={signIn}
